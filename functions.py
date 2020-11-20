@@ -9,19 +9,27 @@ def load_data(mode):
     X: (N,D) tensor containing N data points and each point has dimension D
     Y: (N,) tensor with labels {0, 1}
     """
-    if mode == "toy_example":
+    if mode == "toy_example0":
+        toy = sio.loadmat("Data/toy_data0.mat")
+        X = torch.tensor(toy["Xdata"])
+        Y = torch.tensor(np.ravel(toy["Ydata"]))
+        print("X:", X.shape, "Y:", Y.shape)
+    
+    elif mode == "toy_example":
         toy = sio.loadmat("Data/toy_data.mat")
         X = torch.tensor(toy["Xdata"])
         Y = torch.tensor(np.ravel(toy["Ydata"]))
         print("X:", X.shape, "Y:", Y.shape)
         
     elif mode == "HW_example":
-        nuclear = sio.loadmat("Data/nuclear.mat")
+        nuclear = sio.loadmat("nuclear.mat")
         X = torch.tensor(nuclear["x"].T)
         Y = torch.tensor(np.ravel(nuclear["y"]-1)/2)
+        #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
         print("X:", X.shape, "Y:", Y.shape)
         
     else:
+        print("No mode matched:", mode)
         X = torch.tensor([0])
         Y = torch.tensor([0])
         
