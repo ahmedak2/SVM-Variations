@@ -9,28 +9,37 @@ import scipy.io as sio
 import matplotlib.pyplot as plt
 import torch
 
-def load_data(mode):
+def load_data(mode, path=None):
     """
     Returns:
     X: (N,D) tensor containing N data points and each point has dimension D
     Y: (N,) tensor with labels {-1, 1}
     """
     if mode == "toy_example0":
-        toy = sio.loadmat("toy_data0.mat")
-        X = torch.tensor(toy["Xdata"])
-        Y = torch.tensor(np.ravel(toy["Ydata"]))
+        if path == None:
+            toy = sio.loadmat("toy_data0.mat")
+        else:
+            toy = sio.loadmat(path)
+        X = torch.tensor(toy["Xdata"], dtype = torch.float32, device = 'cuda')
+        Y = torch.tensor(np.ravel(toy["Ydata"]), dtype = torch.float32, device = 'cuda')
         print("X:", X.shape, "Y:", Y.shape)
     
     elif mode == "toy_example":
-        toy = sio.loadmat("toy_data.mat")
-        X = torch.tensor(toy["Xdata"])
-        Y = torch.tensor(np.ravel(toy["Ydata"]))
+        if path == None:
+            toy = sio.loadmat("toy_data.mat")
+        else:
+            toy = sio.loadmat(path)
+        X = torch.tensor(toy["Xdata"], dtype = torch.float32, device = 'cuda')
+        Y = torch.tensor(np.ravel(toy["Ydata"]), dtype = torch.float32, device = 'cuda')
         print("X:", X.shape, "Y:", Y.shape)
         
     elif mode == "HW_example":
-        nuclear = sio.loadmat("nuclear.mat")
-        X = torch.tensor(nuclear["x"].T)
-        Y = torch.tensor(np.ravel(nuclear["y"]-1)/2)
+        if path == None:
+            nuclear = sio.loadmat("nuclear.mat")
+        else:
+            nuclear = sio.loadmat(path)
+        X = torch.tensor(nuclear["x"].T, dtype = torch.float32, device = 'cuda')
+        Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype = torch.float32, device = 'cuda')
         #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
         print("X:", X.shape, "Y:", Y.shape)
         
