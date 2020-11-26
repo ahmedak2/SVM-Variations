@@ -3,7 +3,7 @@ import scipy.io as sio
 import matplotlib.pyplot as plt
 import torch
 
-def load_data(mode):
+def load_data(mode, path=None):
     """
     Returns:
     X: (N,D) tensor containing N data points and each point has dimension D
