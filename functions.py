@@ -16,8 +16,8 @@ def load_data(mode, path=None, device="cpu"):
             toy = sio.loadmat(path)
         
         if device == "cpu":
-            X = torch.tensor(toy["Xdata"])
-            Y = torch.tensor(np.ravel(toy["Ydata"]))
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32)
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32)
         else: # gpu
             X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
@@ -30,8 +30,8 @@ def load_data(mode, path=None, device="cpu"):
             toy = sio.loadmat(path)
         
         if device == "cpu":
-            X = torch.tensor(toy["Xdata"])
-            Y = torch.tensor(np.ravel(toy["Ydata"]))
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32)
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32)
         else: # gpu
             X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
@@ -44,8 +44,8 @@ def load_data(mode, path=None, device="cpu"):
             nuclear = sio.loadmat(path)
         
         if device == "cpu":
-            X = torch.tensor(nuclear["x"].T)
-            Y = torch.tensor(np.ravel(nuclear["y"]-1)/2)
+            X = torch.tensor(nuclear["x"].T, dtype=torch.float32)
+            Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype=torch.float32)
         else: # gpu
             X = torch.tensor(nuclear["x"].T, dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype=torch.float32, device='cuda')
