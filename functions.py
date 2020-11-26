@@ -21,7 +21,7 @@ def load_data(mode, path=None, device="cpu"):
         else: # gpu
             X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
-        print("X:", X.shape, ", Y:", Y.shape, ", on ", device)
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
     
     elif mode == "toy_example":
         if path == None:
@@ -35,7 +35,7 @@ def load_data(mode, path=None, device="cpu"):
         else: # gpu
             X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
-        print("X:", X.shape, ", Y:", Y.shape, ", on ", device)
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
         
     elif mode == "HW_example":
         if path == None:
@@ -50,7 +50,7 @@ def load_data(mode, path=None, device="cpu"):
             X = torch.tensor(nuclear["x"].T, dtype=torch.float32, device='cuda')
             Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype=torch.float32, device='cuda')
             #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
-        print("X:", X.shape, ", Y:", Y.shape, ", on ", device)
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
         
     else:
         print("No mode matched:", mode)
