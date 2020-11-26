@@ -15,7 +15,6 @@ def Kmeans(x, K = 8):
     
     # initialization step for the loop
     x_s = x
-    tol = 1e-4
     indices = torch.arange(x.shape[0], device = x.device)
     clusters_idx = torch.zeros_like(indices)
     check_count = 0
@@ -59,4 +58,25 @@ def Kmeans(x, K = 8):
         if(check_count == max_iter):
             break
     
+    return clusters_idx, centers
+
+def Kmeans_testdata(x,centers):
+    x_s = x
+    
+    # reshape to allow distance calculations
+    centers = centers.unsqueeze(dim = 1)
+    x_s = x_s.unsqueeze(dim = 0)
+
+    # get distance between all x and the centers:
+    diff = x_s - centers
+    dist = (diff * diff).sum(dim = 2)
+
+    # return to original shapes:
+    x_s = x_s.squeeze()
+    centers = centers.squeeze()
+
+    # sort new clusters based on distance to centers
+    _, clusters_idx = torch.min(dist, dim = 0)
+    
     return clusters_idx
+    
