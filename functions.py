@@ -10,19 +10,28 @@ def load_data(mode):
     Y: (N,) tensor with labels {0, 1}
     """
     if mode == "toy_example0":
-        toy = sio.loadmat("Data/toy_data0.mat")
+        if path == None:
+            toy = sio.loadmat("Data/toy_data0.mat")
+        else:
+            toy = sio.loadmat(path)
         X = torch.tensor(toy["Xdata"])
         Y = torch.tensor(np.ravel(toy["Ydata"]))
         print("X:", X.shape, "Y:", Y.shape)
     
     elif mode == "toy_example":
-        toy = sio.loadmat("Data/toy_data.mat")
+        if path == None:
+            toy = sio.loadmat("Data/toy_data.mat")
+        else:
+            toy = sio.loadmat(path)
         X = torch.tensor(toy["Xdata"])
         Y = torch.tensor(np.ravel(toy["Ydata"]))
         print("X:", X.shape, "Y:", Y.shape)
         
     elif mode == "HW_example":
-        nuclear = sio.loadmat("nuclear.mat")
+        if path == None:
+            nuclear = sio.loadmat("Data/nuclear.mat")
+        else:
+            nuclear = sio.loadmat(path)
         X = torch.tensor(nuclear["x"].T)
         Y = torch.tensor(np.ravel(nuclear["y"]-1)/2)
         #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
