@@ -11,7 +11,7 @@ def load_data(mode, path=None, device="cpu"):
     """
     if mode == "toy_example0":
         if path == None:
-            toy = sio.loadmat("toy_data0.mat")
+            toy = sio.loadmat("Data/toy_data0.mat")
         else:
             toy = sio.loadmat(path)
         
@@ -25,7 +25,7 @@ def load_data(mode, path=None, device="cpu"):
     
     elif mode == "toy_example":
         if path == None:
-            toy = sio.loadmat("toy_data.mat")
+            toy = sio.loadmat("Data/toy_data.mat")
         else:
             toy = sio.loadmat(path)
         
@@ -39,7 +39,7 @@ def load_data(mode, path=None, device="cpu"):
         
     elif mode == "HW_example":
         if path == None:
-            nuclear = sio.loadmat("nuclear.mat")
+            nuclear = sio.loadmat("Data/nuclear.mat")
         else:
             nuclear = sio.loadmat(path)
         
