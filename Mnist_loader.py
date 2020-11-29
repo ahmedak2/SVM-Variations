@@ -40,16 +40,20 @@ def preprocess_Mnist(x_train, x_test):
     """
     N1 = x_train.shape[0]
     x_train_temp = x_train.reshape([N1,-1])
+    mu = x_train_temp.mean(dim=0)
+    std = x_train_temp.std(dim=0, unbiased=False)
+    x_train_temp = (x_train_temp - mu) /(std + 1e-8)
     temp_ones = torch.ones([N1,1], dtype = x_train.dtype, device = x_train.device)
     x_train_temp = torch.cat((x_train_temp, temp_ones), dim = 1)
     
     
     N2 = x_test.shape[0]
     x_test_temp = x_test.reshape([N2,-1])
+    x_test_temp = (x_test_temp - mu) /(std + 1e-8)
     temp_ones = torch.ones([N2,1], dtype = x_test.dtype, device = x_test.device)
     x_test_temp = torch.cat((x_test_temp, temp_ones), dim = 1)
     
-    return x_train_temp, x_test_temp
+    return x_train_temp, x_test_temp, mu, std
     
 
 def load_full_Mnist(USE_COLAB = False, path = ''):
