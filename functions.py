@@ -3,39 +3,54 @@ import scipy.io as sio
 import matplotlib.pyplot as plt
 import torch
 
-def load_data(mode, path=None):
+def load_data(mode, path=None, device="cpu"):
     """
     Returns:
     X: (N,D) tensor containing N data points and each point has dimension D
-    Y: (N,) tensor with labels {0, 1}
+    Y: (N,) tensor with labels {-1, 1}
     """
     if mode == "toy_example0":
         if path == None:
             toy = sio.loadmat("Data/toy_data0.mat")
         else:
             toy = sio.loadmat(path)
-        X = torch.tensor(toy["Xdata"])
-        Y = torch.tensor(np.ravel(toy["Ydata"]))
-        print("X:", X.shape, "Y:", Y.shape)
+        
+        if device == "cpu":
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32)
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32)
+        else: # gpu
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
     
     elif mode == "toy_example":
         if path == None:
             toy = sio.loadmat("Data/toy_data.mat")
         else:
             toy = sio.loadmat(path)
-        X = torch.tensor(toy["Xdata"])
-        Y = torch.tensor(np.ravel(toy["Ydata"]))
-        print("X:", X.shape, "Y:", Y.shape)
+        
+        if device == "cpu":
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32)
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32)
+        else: # gpu
+            X = torch.tensor(toy["Xdata"], dtype=torch.float32, device='cuda')
+            Y = torch.tensor(np.ravel(toy["Ydata"]), dtype=torch.float32, device='cuda')
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
         
     elif mode == "HW_example":
         if path == None:
             nuclear = sio.loadmat("Data/nuclear.mat")
         else:
             nuclear = sio.loadmat(path)
-        X = torch.tensor(nuclear["x"].T)
-        Y = torch.tensor(np.ravel(nuclear["y"]-1)/2)
-        #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
-        print("X:", X.shape, "Y:", Y.shape)
+        
+        if device == "cpu":
+            X = torch.tensor(nuclear["x"].T, dtype=torch.float32)
+            Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype=torch.float32)
+        else: # gpu
+            X = torch.tensor(nuclear["x"].T, dtype=torch.float32, device='cuda')
+            Y = torch.tensor(np.ravel(nuclear["y"]-1)/2, dtype=torch.float32, device='cuda')
+            #Y = torch.tensor(np.ravel(nuclear["y"]-1)/2) #-1/+1 => 0/1
+        print("X:", X.shape, ", Y:", Y.shape, ", on", device)
         
     else:
         print("No mode matched:", mode)
@@ -72,4 +87,15 @@ def plot_classifier(W, plot_range):
     z = np.argmax(np.dstack((z1, z2)), axis=2)
     h = plt.contourf(x, y, z, alpha=0.1)
     plt.show()
+
+
+
+    
+# # Testing    
+# X, Y = load_data("toy_example")
+# plot_data(X, Y)
+
+# W = torch.tensor([[1,2],[2,3],[1,2]])
+# plot_range = [-3, 3, -3, 3]
+# plot_classifier(W, plot_range)
 

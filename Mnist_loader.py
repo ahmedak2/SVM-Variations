@@ -40,16 +40,20 @@ def preprocess_Mnist(x_train, x_test):
     """
     N1 = x_train.shape[0]
     x_train_temp = x_train.reshape([N1,-1])
+    mu = x_train_temp.mean(dim=0)
+    std = x_train_temp.std(dim=0, unbiased=False)
+    x_train_temp = (x_train_temp - mu) /(std + 1e-8)
     temp_ones = torch.ones([N1,1], dtype = x_train.dtype, device = x_train.device)
     x_train_temp = torch.cat((x_train_temp, temp_ones), dim = 1)
     
     
     N2 = x_test.shape[0]
     x_test_temp = x_test.reshape([N2,-1])
+    x_test_temp = (x_test_temp - mu) /(std + 1e-8)
     temp_ones = torch.ones([N2,1], dtype = x_test.dtype, device = x_test.device)
     x_test_temp = torch.cat((x_test_temp, temp_ones), dim = 1)
     
-    return x_train_temp, x_test_temp
+    return x_train_temp, x_test_temp, mu, std
     
 
 def load_full_Mnist(USE_COLAB = False, path = ''):
@@ -194,14 +198,14 @@ def load_two_numbers_Mnist(num1=3, num2=8, num_train=6000, num_test=1000, USE_CO
     
     # get the data related to num1 and num2 in order
     train_x_nums = train_x_full[train_y_full == num1]
-    train_y_nums = -torch.ones(train_x_nums.shape[0])
+    train_y_nums = -torch.ones(train_x_nums.shape[0], device = train_y_full.device)
     train_x_nums = torch.cat((train_x_nums, train_x_full[train_y_full == num2]), dim = 0)
-    train_y_nums = torch.cat((train_y_nums, torch.ones(train_x_full[train_y_full == num2].shape[0])), dim = 0)
+    train_y_nums = torch.cat((train_y_nums, torch.ones(train_x_full[train_y_full == num2].shape[0], device = train_y_full.device)), dim = 0)
     
     test_x_nums = test_x_full[test_y_full == num1]
-    test_y_nums = -torch.ones(test_x_nums.shape[0])
+    test_y_nums = -torch.ones(test_x_nums.shape[0], device = train_y_full.device)
     test_x_nums = torch.cat((test_x_nums, test_x_full[test_y_full == num2]), dim = 0)
-    test_y_nums = torch.cat((test_y_nums, torch.ones(test_x_full[test_y_full == num2].shape[0])), dim = 0)
+    test_y_nums = torch.cat((test_y_nums, torch.ones(test_x_full[test_y_full == num2].shape[0], device = train_y_full.device)), dim = 0)
     
     # ensure num_train and num_test are within proper range
     if num_train > train_x_nums.shape[0]:
