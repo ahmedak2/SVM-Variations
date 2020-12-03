@@ -33,7 +33,7 @@ class ClusterSVM(SVM):
         K = self.K
         lamb = self.lamb
 
-        I_Nx1 = torch.ones(N,1)
+        I_Nx1 = torch.ones(N,1, dtype=X.dtype, device=X.device)
         X_with_ones = torch.cat((X,I_Nx1),dim=1)
 
         D = X_with_ones.shape[1]
@@ -101,7 +101,7 @@ class ClusterSVM(SVM):
         cluster_label = Kmeans_testdata(X_test, self.centroid)
 
 
-        I_Nx1 = torch.ones(N,1)
+        I_Nx1 = torch.ones(N,1,dtype=X_test.dtype, device=X_test.device)
         X_test_with_ones = torch.cat((X_test,I_Nx1),dim=1)
 
         y_pred = torch.zeros(X_test.shape[0], dtype=X_test.dtype, device=X_test.device)
