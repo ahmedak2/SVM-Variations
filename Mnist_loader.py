@@ -198,14 +198,14 @@ def load_two_numbers_Mnist(num1=3, num2=8, num_train=6000, num_test=1000, USE_CO
     
     # get the data related to num1 and num2 in order
     train_x_nums = train_x_full[train_y_full == num1]
-    train_y_nums = -torch.ones(train_x_nums.shape[0])
+    train_y_nums = -torch.ones(train_x_nums.shape[0], device = train_y_full.device)
     train_x_nums = torch.cat((train_x_nums, train_x_full[train_y_full == num2]), dim = 0)
-    train_y_nums = torch.cat((train_y_nums, torch.ones(train_x_full[train_y_full == num2].shape[0])), dim = 0)
+    train_y_nums = torch.cat((train_y_nums, torch.ones(train_x_full[train_y_full == num2].shape[0], device = train_y_full.device)), dim = 0)
     
     test_x_nums = test_x_full[test_y_full == num1]
-    test_y_nums = -torch.ones(test_x_nums.shape[0])
+    test_y_nums = -torch.ones(test_x_nums.shape[0], device = train_y_full.device)
     test_x_nums = torch.cat((test_x_nums, test_x_full[test_y_full == num2]), dim = 0)
-    test_y_nums = torch.cat((test_y_nums, torch.ones(test_x_full[test_y_full == num2].shape[0])), dim = 0)
+    test_y_nums = torch.cat((test_y_nums, torch.ones(test_x_full[test_y_full == num2].shape[0], device = train_y_full.device)), dim = 0)
     
     # ensure num_train and num_test are within proper range
     if num_train > train_x_nums.shape[0]:
