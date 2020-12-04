@@ -1,10 +1,10 @@
-from SVMClass import *
+from LinearSVM import *
 from Kmeans import *
 
 import torch
 import numpy as np
 
-class ClusterSVM(SVM):
+class ClusterSVM(object):
     def __init__(self, K=8, lamb=1e30):
         self.W = None
         self.Wl = None
