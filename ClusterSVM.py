@@ -1,10 +1,10 @@
-from SVMClass import *
+from LinearSVM import *
 from Kmeans import *
 
 import torch
 import numpy as np
 
-class ClusterSVM(SVM):
+class ClusterSVM(object):
     def __init__(self, K=8, lamb=1e30):
         self.W = None
         self.Wl = None
@@ -56,14 +56,12 @@ class ClusterSVM(SVM):
         - y_train: A PyTorch tensor of shape (N,) containing training labels; y[i] = {-1,1} means that X[i] has label  -1 or 1 depending on the class.
         - K: number of clusters
         - lamb: global regularization factor
-
         - learning_rate: (float) learning rate for optimization.
         - reg: (float) regularization strength. (ie. lambda)
         - num_iters: (integer) number of steps to take when optimizing
         - batch_size: (integer) number of training examples to use at each step.
         - print_progress: (boolean) If true, print progress during optimization.
         - exit_diff: (float) condition to stop the gradient descent algorithm if the change in loss is too low.
-
         Returns: A tuple of:
         - loss_all: A PyTorch tensor giving the values of the loss at each training iteration.
         """
@@ -82,7 +80,8 @@ class ClusterSVM(SVM):
         loss_hist = self.LSVM.train(X_train_hat, y_train, reg=reg, num_iters=num_iters, learning_rate=learning_rate)
 
         # SVM parameters
-        W_hat = torch.tensor(self.LSVM.W, dtype=X_train.dtype, device=X_train.device)
+        # W_hat = torch.tensor(self.LSVM.W, dtype=X_train.dtype, device=X_train.device)
+        W_hat = self.LSVM.W.clone().detach()
 
         # global regularizer
         self.W = 1/np.sqrt(self.lamb)*W_hat[:D]
