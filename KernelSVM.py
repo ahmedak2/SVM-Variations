@@ -226,3 +226,17 @@ def apply_sklearn_ksvm(x_train, y_train, x_test = [], y_test = [], max_iters = 1
     y_pred = torch.tensor(svclassifier.predict(x_test))
     acc = ((y_test==y_pred).sum()) / float(y_test.shape[0])
     print(acc)
+
+
+class KernelSVM_sklearn(object):
+    def __init__(self):
+        from sklearn.svm import SVC
+        self.svc = SVC(kernel='rbf')
+    
+    def train(self, x_train, y_train):
+        self.svc.fit(x_train.cpu(), y_train.cpu())
+    
+    def predict(self, x_test):
+        y_pred = torch.tensor(self.svc.predict(x_test.cpu()), device=x_test.device)
+        return y_pred
+
