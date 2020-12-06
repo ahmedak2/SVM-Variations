@@ -232,11 +232,14 @@ class KernelSVM_sklearn(object):
     def __init__(self):
         from sklearn.svm import SVC
         self.svc = SVC(kernel='rbf')
+        print("init done")
     
     def train(self, x_train, y_train):
         self.svc.fit(x_train.cpu(), y_train.cpu())
+        print("train done")
     
     def predict(self, x_test):
         y_pred = torch.tensor(self.svc.predict(x_test.cpu()), device=x_test.device)
+        print("predict done")
         return y_pred
 
