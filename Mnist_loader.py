@@ -82,10 +82,10 @@ def load_full_Mnist(USE_COLAB = False, path = ''):
     
 
 
-    train_x_full = torch.tensor(np.array(idx2numpy.convert_from_file(train_images_file))).to(dtype = torch.float32, device = 'cuda')
-    train_y_full = torch.tensor(np.array(idx2numpy.convert_from_file(train_labels_file))).to(dtype = torch.int32, device = 'cuda')
-    test_x_full = torch.tensor(np.array(idx2numpy.convert_from_file(test_images_file))).to(dtype = torch.float32, device = 'cuda')
-    test_y_full = torch.tensor(np.array(idx2numpy.convert_from_file(test_labels_file))).to(dtype = torch.int32, device = 'cuda')
+    train_x_full = torch.tensor(np.array(idx2numpy.convert_from_file(train_images_file))).to(dtype = torch.float32, device = 'cpu')
+    train_y_full = torch.tensor(np.array(idx2numpy.convert_from_file(train_labels_file))).to(dtype = torch.int32, device = 'cpu')
+    test_x_full = torch.tensor(np.array(idx2numpy.convert_from_file(test_images_file))).to(dtype = torch.float32, device = 'cpu')
+    test_y_full = torch.tensor(np.array(idx2numpy.convert_from_file(test_labels_file))).to(dtype = torch.int32, device = 'cpu')
 
     return train_x_full, train_y_full, test_x_full, test_y_full
 

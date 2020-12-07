@@ -24,13 +24,13 @@ def load_SVMGuide1(USE_COLAB = False, path = ''):
 
     # load training data
     train_data = load_svmlight_file(train_file)
-    x_train_pre = torch.tensor(np.array(train_data[0].todense())).to(dtype = torch.float32, device = 'cuda')
-    y_train = torch.tensor(np.array(train_data[1])).to(dtype = torch.int32, device = 'cuda')
+    x_train_pre = torch.tensor(np.array(train_data[0].todense())).to(dtype = torch.float32, device = 'cpu')
+    y_train = torch.tensor(np.array(train_data[1])).to(dtype = torch.int32, device = 'cpu')
 
     # load testing data
     test_data = load_svmlight_file(test_file)
-    x_test_pre = torch.tensor(np.array(test_data[0].todense())).to(dtype = torch.float32, device = 'cuda')
-    y_test = torch.tensor(np.array(test_data[1])).to(dtype = torch.int32, device = 'cuda')
+    x_test_pre = torch.tensor(np.array(test_data[0].todense())).to(dtype = torch.float32, device = 'cpu')
+    y_test = torch.tensor(np.array(test_data[1])).to(dtype = torch.int32, device = 'cpu')
 
     # scale data:
     mu = x_train_pre.mean(dim = 0)

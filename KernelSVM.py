@@ -29,7 +29,7 @@ def gaussian_kernel(x1, x2, gamma=1):
 
 
 class kernelSVM(object):
-    def __init__(self, kernel, C=1e-2, eps=1e-5): 
+    def __init__(self, kernel = gaussian_kernel, C=1e-2, eps=1e-5): 
         self.kernel = kernel
         if C is not None: # without slack variables
             self.C = float(C)

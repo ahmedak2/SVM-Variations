@@ -25,18 +25,18 @@ class KmeanSVM(object):
         Outputs:
         - X_hat: extended feature vectors of shape (N,D*(1+K))
         """
-        N = X.shape[0]
+        N, D = X.shape
         K = self.K
 
-        I_Nx1 = torch.ones(N,1, dtype=X.dtype, device=X.device)
-        X_with_ones = torch.cat((X,I_Nx1),dim=1)
+#         I_Nx1 = torch.ones(N,1, dtype=X.dtype, device=X.device)
+#         X_with_ones = torch.cat((X,I_Nx1),dim=1)
 
-        D = X_with_ones.shape[1]
+#         D = X_with_ones.shape[1]
         X_hat = torch.zeros(N, D*K, dtype=X.dtype, device=X.device)
 
         for l in range(K):
             idl = cluster_id == l
-            X_hat[idl, (D*l):(D*(l+1))] = X_with_ones[idl,:]
+            X_hat[idl, (D*l):(D*(l+1))] = X[idl,:]
 
         return X_hat
 
@@ -57,8 +57,7 @@ class KmeanSVM(object):
         Returns: A tuple of:
         - loss_all: A PyTorch tensor giving the values of the loss at each training iteration.
         """
-        N = X_train.shape[0]
-        D = X_train.shape[1]+1
+        N, D = X_train.shape
 
         # clustering
         cluster_label, centroid = Kmeans(X_train,self.K)
@@ -86,13 +85,13 @@ class KmeanSVM(object):
         # clustering
         cluster_label = Kmeans_testdata(X_test, self.centroid)
 
-        I_Nx1 = torch.ones(N,1,dtype=X_test.dtype, device=X_test.device)
-        X_test_with_ones = torch.cat((X_test,I_Nx1),dim=1)
+#         I_Nx1 = torch.ones(N,1,dtype=X_test.dtype, device=X_test.device)
+#         X_test_with_ones = torch.cat((X_test,I_Nx1),dim=1)
 
         y_pred = torch.zeros(X_test.shape[0], dtype=X_test.dtype, device=X_test.device)
         for l in range(self.K):
             idl = cluster_label == l
-            t = torch.matmul(X_test_with_ones[idl,:], self.Wl[:,l])
+            t = torch.matmul(X_test[idl,:], self.Wl[:,l])
             y_pred[idl] = (1.0*(t>=0) -1.0*(t<0)).type(X_test.dtype)
 
         return y_pred

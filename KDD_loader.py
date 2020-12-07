@@ -9,10 +9,10 @@ def kdd_load(USE_COLAB = False, GOOGLE_DRIVE = ''):
         path = os.path.join(GOOGLE_DRIVE,path)
     
     data = np.loadtxt(path, delimiter="\t")
-    data = torch.tensor(data).to(dtype = torch.float32, device = 'cuda')
+    data = torch.tensor(data).to(dtype = torch.float32, device = 'cpu')
     
     # assign training and testing data. Last 10 million points are for testing
-    N = 10000000
+    N = 1e7
     x_train_pre = data[0:-N, 0:2]
     y_train = data[0:-N, 2]
     x_test_pre = data[-N:, 0:2]
