@@ -19,7 +19,7 @@ def linear_kernel(x1, x2):
     """
     x1 and x2 are np.array or torch.tensor with shape (D,) where D is the dimension.
     """
-    return np.dot(x1, x2)
+    return torch.dot(x1, x2)
 
 def gaussian_kernel(x1, x2, gamma=1):
     """
@@ -142,7 +142,8 @@ class kernelSVM(object):
             W = torch.zeros(D, device=X.device)
             for i in range(len(self.alpha)):
                 W += self.alpha[i] * self.sv_y[i] * self.sv[i]
-            y_pred = torch.sign(torch.dot(X, W) + self.b)
+            print("X", X.dtype, "W", W.dtype)
+            y_pred = torch.sign(torch.matmul(X, W) + self.b)
         else:
             for i in range(N):
                 s = 0.0
@@ -161,7 +162,7 @@ class kernelSVM(object):
         x = np.linspace(plot_range[0], plot_range[1], 50)
         y = np.linspace(plot_range[2], plot_range[3], 50)
         xx, yy = np.meshgrid(x, y)
-        X_test = torch.tensor([[x1, x2] for x1, x2 in zip(np.ravel(xx), np.ravel(yy))], device=self.sv.device)
+        X_test = torch.tensor([[x1, x2] for x1, x2 in zip(np.ravel(xx), np.ravel(yy))], device=self.sv.device, dtype=self.sv.dtype)
         z_test = self.predict(X_test)
         z = np.reshape(z_test.cpu(), (xx.shape))
         h = plt.contourf(x, y, z, alpha=0.1)
