@@ -221,7 +221,7 @@ def apply_KSVM(kernel, x_train, y_train, x_test = [], y_test = [], cross=False, 
     # apply cross validation if cross:
     if cross:
         C_list = [1e-2, 1e-1, 1, 1e+1, 1e+2, 1e+3] # lambda=1/C
-        eps_list = [1e-6, 1e-5, 1e-4, 1e-3]
+        eps_list = 1e-5 #[1e-6, 1e-5, 1e-4, 1e-3]
         KSVM = kernelSVM(kernel)
         max_acc, max_C, max_eps = search_ksvm_hyperparams(KSVM, x_train, y_train, kernel, C_list, eps_list)
         KSVM = kernelSVM(kernel, max_C, max_eps)
