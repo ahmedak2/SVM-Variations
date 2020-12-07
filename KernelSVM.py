@@ -9,7 +9,9 @@ https://locuslab.github.io/qpth/
 """
 import numpy as np
 import torch
-import qpth
+# import qpth
+import cvxopt
+import cvxopt.solvers
 import matplotlib.pyplot as plt
 # import time
 
@@ -27,7 +29,7 @@ def gaussian_kernel(x1, x2, gamma=1):
 
 
 class kernelSVM(object):
-    def __init__(self, kernel, C=None, eps=1e-5):
+    def __init__(self, kernel, C=1e-2, eps=1e-5): 
         self.kernel = kernel
         if C is not None: # without slack variables
             self.C = float(C)
@@ -37,7 +39,7 @@ class kernelSVM(object):
         self.sv = None
         self.sv_y = None
         self.b = 0.0
-        self.eps = eps
+        self.eps = eps # no use for cvxpot
     
     def train(self, X, y, print_progress=False):
         """
@@ -64,27 +66,53 @@ class kernelSVM(object):
         #print("t_k = ", t_k)
         print("start QP...")
         
+        # Using qpth =========================
+#         # Set up QP problem
+#         Q = torch.ger(y, y) * K + self.eps*torch.eye(N, device=X.device) #torch.outer=torch.ger
+#         p = -torch.ones(N, device=X.device)
+#         A = torch.reshape(y, (1,N)) # reshape as 2D
+#         b = torch.zeros(1, device=X.device)
+        
+#         if self.C is None:
+#             G = torch.diag(-torch.ones(N, device=X.device))
+#             h = torch.zeros(N, device=X.device)
+#             #print("G", G.dtype, "h", h.dtype)
+#         else:
+#             G = torch.vstack((torch.diag(-torch.ones(N, device=X.device)), torch.eye(N, device=X.device)))
+#             h = torch.hstack((torch.zeros(N, device=X.device), torch.ones(N, device=X.device)*self.C/N))
+#             #print("G", G.dtype, "h", h.dtype)
+        
+#         # Solve alpha by QP
+#         #t2 = time.time()
+#         solution = qpth.qp.QPFunction(verbose=print_progress)(Q, p, G, h, A, b)
+#         alpha = solution.view(-1) # reshape as 1D
+#         #t_qp = time.time() - t2
+#         #print("t_qp = ", t_qp)
+        
+        # Using cvxopt ======================
         # Set up QP problem
-        Q = torch.ger(y, y) * K + self.eps*torch.eye(N, device=X.device) #torch.outer=torch.ger
-        p = -torch.ones(N, device=X.device)
-        A = torch.reshape(y, (1,N)) # reshape as 2D
-        b = torch.zeros(1, device=X.device)
+        K = np.array(K, dtype=np.float64)
+        yy = np.array(y, dtype=np.float64)
+        
+        P = cvxopt.matrix(np.outer(yy, yy) * K)
+        q = cvxopt.matrix(-np.ones(N))
+        A = cvxopt.matrix(yy, (1,N)) # reshape as 2D
+        b = cvxopt.matrix(0.0)
+        #print(K[1:5,1:5],P[1:5,1:5])
         
         if self.C is None:
-            G = torch.diag(-torch.ones(N, device=X.device))
-            h = torch.zeros(N, device=X.device)
-            #print("G", G.dtype, "h", h.dtype)
+            G = cvxopt.matrix(np.diag(-np.ones(N)))
+            h = cvxopt.matrix(np.zeros(N))
         else:
-            G = torch.vstack((torch.diag(-torch.ones(N, device=X.device)), torch.eye(N, device=X.device)))
-            h = torch.hstack((torch.zeros(N, device=X.device), torch.ones(N, device=X.device)*self.C/N))
-            #print("G", G.dtype, "h", h.dtype)
+            G = cvxopt.matrix(np.vstack((np.diag(-np.ones(N)), np.identity(N))))
+            h = cvxopt.matrix(np.hstack((np.zeros(N), np.ones(N)*self.C/N)))
         
         # Solve alpha by QP
-        #t2 = time.time()
-        solution = qpth.qp.QPFunction(verbose=print_progress)(Q, p, G, h, A, b)
-        alpha = solution.view(-1) # reshape as 1D
-        #t_qp = time.time() - t2
-        #print("t_qp = ", t_qp)
+        cvxopt.solvers.options['show_progress'] = print_progress
+        solution = cvxopt.solvers.qp(P, q, G, h, A, b)
+        alpha = torch.tensor(np.ravel(solution['x']))
+        K = torch.tensor(K)
+        # =======================================
         
         # Save support vectors
         isSV = alpha>1e-5
@@ -140,7 +168,7 @@ class kernelSVM(object):
         plt.show()
 
 
-def search_ksvm_hyperparams(model, x, y, kernel, C, eps_list, folds=3):#C_list, 
+def search_ksvm_hyperparams(model, x, y, kernel, C_list, eps_list, folds=3):#C_list, 
     """
         KSVM model to evaluate
         x: full training data NxD
@@ -157,26 +185,26 @@ def search_ksvm_hyperparams(model, x, y, kernel, C, eps_list, folds=3):#C_list,
     max_acc = 0.0
     max_C = 0.0
     max_eps = 0.0
-    #for C in C_list:
-    for eps in eps_list:
-        acc = torch.zeros(folds)
-        for k in range(folds):
-            x_train = torch.cat((x[indices[0:k*length]],x[indices[(k+1)*length:]]),dim = 0)
-            y_train = torch.cat((y[indices[0:k*length]],y[indices[(k+1)*length:]]),dim = 0)
-            x_val = x[indices[k*length:(k+1)*length]]
-            y_val = y[indices[k*length:(k+1)*length]]
+    for C in C_list:
+        for eps in eps_list:
+            acc = torch.zeros(folds)
+            for k in range(folds):
+                x_train = torch.cat((x[indices[0:k*length]],x[indices[(k+1)*length:]]),dim = 0)
+                y_train = torch.cat((y[indices[0:k*length]],y[indices[(k+1)*length:]]),dim = 0)
+                x_val = x[indices[k*length:(k+1)*length]]
+                y_val = y[indices[k*length:(k+1)*length]]
 
-            model.__init__(kernel, C, eps)
-            model.train(x_train, y_train, print_progress = False)
-            y_pred = model.predict(x_val)
-            acc[k] = ((y_val==y_pred).sum()) / float(y_val.shape[0])
-        acc_mean = acc.mean()
-        if(acc_mean > max_acc):
-            max_acc = acc_mean
-            max_C = C
-            max_eps = eps
+                model.__init__(kernel, C, eps)
+                model.train(x_train, y_train, print_progress = False)
+                y_pred = model.predict(x_val)
+                acc[k] = ((y_val==y_pred).sum()) / float(y_val.shape[0])
+            acc_mean = acc.mean()
+            if(acc_mean > max_acc):
+                max_acc = acc_mean
+                max_C = C
+                max_eps = eps
 
-        print("at C = {} and eps = {} we get acc = {}" .format(C, eps, acc_mean))
+            print("at C = {} and eps = {} we get acc = {}" .format(C, eps, acc_mean))
 
 
     print("Max we get at: C: {} and eps = {} we get acc = {}" .format(max_C, max_eps, max_acc))
@@ -192,7 +220,7 @@ def apply_KSVM(kernel, x_train, y_train, x_test = [], y_test = [], cross=False, 
 
     # apply cross validation if cross:
     if cross:
-        C_list = None #[1e-2, 1e-1, 1, 1e+1, 1e+2, 1e+3] # lambda=1/C
+        C_list = [1e-2, 1e-1, 1, 1e+1, 1e+2, 1e+3] # lambda=1/C
         eps_list = [1e-6, 1e-5, 1e-4, 1e-3]
         KSVM = kernelSVM(kernel)
         max_acc, max_C, max_eps = search_ksvm_hyperparams(KSVM, x_train, y_train, kernel, C_list, eps_list)

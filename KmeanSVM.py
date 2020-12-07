@@ -167,7 +167,7 @@ def search_kmsvm_hyperparams(model, x, y, folds, Ks, lambs, learning_rates, regs
     return max_acc, max_K, max_lamb, max_lr, max_reg
 
 
-def apply_KMSVM(x_train, y_train, x_test=[], y_test=[], max_iters=1000, cross=False, K=4, lamb=1e-1):
+def apply_KMSVM(x_train, y_train, x_test=[], y_test=[], max_iters=1000, cross=False, K=4, lamb=1e-1, lr=1, reg=1e-5):
     # get best learning rate and evaluate accuracy on test data
     # cross indicates whether we want to search for hyperparameters or just use the default ones
     
@@ -189,7 +189,7 @@ def apply_KMSVM(x_train, y_train, x_test=[], y_test=[], max_iters=1000, cross=Fa
         loss_history = KMSVM.train(x_train, y_train, reg=max_reg, num_iters=max_iters, learning_rate=max_lr, print_progress = False)
     else:
         KMSVM = KmeanSVM(K=K, lamb=lamb)
-        loss_history = KMSVM.train(x_train, y_train, num_iters=max_iters, print_progress = False)
+        loss_history = KMSVM.train(x_train, y_train, learning_rate=lr, reg=reg, num_iters=max_iters, print_progress = False)
         
     y_pred = KMSVM.predict(x_test)
     acc = ((y_test==y_pred).sum())/float(y_test.shape[0])
