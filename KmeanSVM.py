@@ -11,8 +11,6 @@ class KmeanSVM(object):
         self.K = K
         self.LSVM = LinearSVM()
 
-        np.random.seed(0)
-        torch.manual_seed(0)
         self.default_lr = 1
         self.default_reg = 1e-5
 
