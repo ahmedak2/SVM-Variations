@@ -4,6 +4,8 @@ from Kmeans import *
 import torch
 import numpy as np
 
+import matplotlib.pyplot as plt 
+
 class ClusterSVM(object):
     def __init__(self, K=8, lamb=1e30):
         self.W = None
@@ -116,3 +118,18 @@ class ClusterSVM(object):
         # y_pred = self.LSVM.predict(X_test_hat)
 
         return y_pred
+
+    def plot_classifier(self, plot_range):
+        """
+        Note: only for D=2 now!!
+        Input:
+        plot_range = [x_low, x_upper, y_low, y_upper] array like 
+        """
+        x = np.linspace(plot_range[0], plot_range[1], 50)
+        y = np.linspace(plot_range[2], plot_range[3], 50)
+        xx, yy = np.meshgrid(x, y)
+        X_test = torch.tensor([[x1, x2] for x1, x2 in zip(np.ravel(xx), np.ravel(yy))], device=self.W.device, dtype=self.W.dtype)
+        z_test = self.predict(X_test)
+        z = np.reshape(z_test.cpu(), (xx.shape))
+        h = plt.contourf(x, y, z, alpha=0.1)
+        plt.show()
