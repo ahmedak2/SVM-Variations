@@ -14,9 +14,6 @@ class ClusterSVM(object):
         self.lamb = lamb
 
         self.LSVM = LinearSVM()
-
-        np.random.seed(0)
-        torch.manual_seed(0)
         self.default_lr = 0.5
         self.default_reg = 1e-3
 
